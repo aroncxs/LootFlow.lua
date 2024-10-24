@@ -10,7 +10,7 @@ local coinsCollected = 0
 local function tweenTo(position)
     if humanoidRootPart then
         local distance = (humanoidRootPart.Position - position).Magnitude
-        local duration = math.max(distance / farmSpeed, 0.2)  -- Duração mínima de 0.2 segundos
+        local duration = math.max(distance / farmSpeed, 0.4)  -- Duração mínima de 0.4 segundos
 
         -- Configurações do Tween
         local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
@@ -53,22 +53,6 @@ local function collectCoins()
             if coinLabel then
                 coinLabel.Text = "Coins: " .. coinsCollected
             end
-
-            -- Verifica se o Map existe
-            if workspace:FindFirstChild("Map") then
-                -- Teleporta para um SpawnLocation aleatório
-                local spawnLocations = {}
-                for _, spawn in pairs(workspace:GetChildren()) do
-                    if spawn:IsA("SpawnLocation") then
-                        table.insert(spawnLocations, spawn)  -- Adiciona os SpawnLocations a uma lista
-                    end
-                end
-
-                if #spawnLocations > 0 then
-                    local randomSpawn = spawnLocations[math.random(1, #spawnLocations)]
-                    humanoidRootPart.CFrame = randomSpawn.CFrame  -- Teleporta para um SpawnLocation aleatório
-                end
-            end
         else
             wait(0.5)  -- Espera antes de tentar novamente
         end
@@ -83,28 +67,40 @@ local function createGUI()
     screenGui.Name = "AutoFarmGUI"
 
     local frame = Instance.new("Frame", screenGui)
-    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Cor de fundo
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     frame.BorderSizePixel = 0
-    frame.Position = UDim2.new(0.02, 0, 0.02, 0) -- Posição no cantinho
-    frame.Size = UDim2.new(0, 200, 0, 300) -- Tamanho do Frame
+    frame.Position = UDim2.new(0.02, 0, 0.02, 0)
+    frame.Size = UDim2.new(0, 200, 0, 300)
+    frame.BackgroundTransparency = 0.1
+    frame.BorderColor3 = Color3.fromRGB(60, 60, 60)
+    frame.BorderMode = Enum.BorderMode.Inset
+
+    -- Arredondar bordas do frame
+    local uicorner = Instance.new("UICorner", frame)
+    uicorner.CornerRadius = UDim.new(0.1, 0)
 
     -- Label para exibir a quantidade de moedas
     local coinLabel = Instance.new("TextLabel", frame)
-    coinLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    coinLabel.BackgroundTransparency = 1
+    coinLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    coinLabel.BackgroundTransparency = 0.3
     coinLabel.Position = UDim2.new(0.1, 0, 0.1, 0)
     coinLabel.Size = UDim2.new(0, 180, 0, 50)
     coinLabel.Text = "Coins: " .. coinsCollected
     coinLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     coinLabel.TextScaled = true
-    coinLabel.Name = "CoinLabel" -- Nome para referência futura
+    coinLabel.Name = "CoinLabel"
+    local coinUICorner = Instance.new("UICorner", coinLabel)
+    coinUICorner.CornerRadius = UDim.new(0.2, 0)
 
     -- Botão para ativar/desativar o autofarm
     local toggleButton = Instance.new("TextButton", frame)
     toggleButton.Size = UDim2.new(0.8, 0, 0, 50)
-    toggleButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+    toggleButton.Position = UDim2.new(0.1, 0, 0.25, 0)
     toggleButton.Text = "Autofarm: Disabled"
+    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     toggleButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+    local toggleUICorner = Instance.new("UICorner", toggleButton)
+    toggleUICorner.CornerRadius = UDim.new(0.2, 0)
 
     -- Campo para Farm Speed
     local farmSpeedInput = Instance.new("TextBox", frame)
@@ -112,14 +108,21 @@ local function createGUI()
     farmSpeedInput.Position = UDim2.new(0.1, 0, 0.4, 0)
     farmSpeedInput.Text = tostring(farmSpeed)
     farmSpeedInput.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+    farmSpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    local farmSpeedUICorner = Instance.new("UICorner", farmSpeedInput)
+    farmSpeedUICorner.CornerRadius = UDim.new(0.15, 0)
 
     -- Label para exibir a velocidade do Farm
     local farmSpeedLabel = Instance.new("TextLabel", frame)
     farmSpeedLabel.Size = UDim2.new(0.8, 0, 0, 30)
     farmSpeedLabel.Position = UDim2.new(0.1, 0, 0.6, 0)
     farmSpeedLabel.Text = "Farm Speed: " .. farmSpeed
+    farmSpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     farmSpeedLabel.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    local farmSpeedUICorner = Instance.new("UICorner", farmSpeedLabel)
+    farmSpeedUICorner.CornerRadius = UDim.new(0.15, 0)
 
+    -- Ação para o botão de ativar/desativar o autofarm
     toggleButton.MouseButton1Click:Connect(function()
         isActive = not isActive
         toggleButton.Text = "Autofarm: " .. (isActive and "Enabled" or "Disabled")
